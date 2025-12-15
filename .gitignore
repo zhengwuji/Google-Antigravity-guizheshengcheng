@@ -1,0 +1,58 @@
+﻿# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# pnpm
+.pnpm-store/
+.pnpm-debug.log*
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 保留 .env 作为默认配置模板
+# 如需本地自定义，请使用 .env.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+*~
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# React specific
+.cache/
+*.tsbuildinfo

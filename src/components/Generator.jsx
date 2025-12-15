@@ -1,100 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
-    Terminal, Copy, Check, Settings, FileCode, Sparkles, 
-    Download, Globe, Folder, Box, Cpu, User, Layers 
-} from 'lucide-react';
-
-// --- Antigravity Data Presets ---
-
-const ANTIGRAVITY_ROLES = [
-    "Frontend Developer",
-    "Backend Engineer", 
-    "Full Stack Developer",
-    "Unity Game Developer",
-    ".NET Engineer",
-    "Data Scientist",
-    "DevOps Engineer"
-];
-
-const TECH_TAGS = [
-    "React", "Vue", "TypeScript", "Tailwind CSS",
-    "Three.js", "React Three Fiber", "WebGL", 
-    "Unity", "C#", ".NET Core", "MSSQL",
-    "Python", "Node.js", "Next.js", "Docker", "Kubernetes"
-];
-
-const DEPLOYMENT_TAGS = [
-    "前端项目", "后端项目", "本地部署", 
-    "云端部署", "Docker部署", "Windows环境", "Linux环境"
-];
-
-// The Core Antigravity Rules mapped to the "Click to Add" interface
-// Expanded with modern architectural patterns
-const ANTIGRAVITY_RULES = [
-    // Core Philosophy
-    "简洁至上: 恪守 KISS 原则，优先选择最直接、稳定的技术实现",
-    "深度分析: 立足于第一性原理 (First Principles) 剖析问题",
-    "事实为本: 以事实为最高准则，发现技术隐患(如TCP粘包)必须坦率斧正",
-    
-    // Process & Workflow
-    "渐进式开发: 先跑通核心链路(上传->列表->推送)，再完善细节",
-    "结构化流程: 遵循 '构思方案 -> 提请审核 -> 分解任务' 的顺序",
-    "契约优先: 开发前必须先确立 Swagger 接口与 TCP 指令格式",
-    "Git: 遵循 Conventional Commits (feat/fix/docs/refactor)",
-
-    // Architecture & Design Patterns
-    "架构分层: 严格遵守 视图层 -> 逻辑层 -> 数据层 的单向依赖流",
-    "组件化: 遵循单一职责原则，UI 组件与业务逻辑分离 (Container/Presentational)",
-    "软硬解耦: 严格区分业务逻辑与硬件通信层，确保可扩展性",
-    "事件驱动: 复杂交互优先采用发布/订阅模式 (Pub/Sub) 降低耦合度",
-    "依赖倒置: 核心逻辑不应依赖具体实现，优先使用依赖注入",
-
-    // Coding Standards
-    "状态管理: 避免 Prop Drilling，全局状态与局部状态需界定清晰",
-    "函数式编程: 优先使用纯函数，减少副作用，利用 Composition 组合逻辑",
-    "异常处理: 后端 API 需统一捕获异常并返回标准 JSON",
-    "注释: 关键业务逻辑(TCP/分片)必须包含详细中文注释",
-    "避免长文件: 避免长文件编程，不利于维护开发，注意功能分割",
-
-    // Performance & Security
-    "性能优化: 避免不必要的重渲染 (React.memo/useMemo)，大列表必须虚拟化",
-    "大文件处理: 针对 >1GB 文件必须实现分片流式处理",
-    "安全性: 所有外部输入必须经过验证与清洗 (Sanitization)",
-    "UI/UX: 严格复刻文档描述的'三栏式布局'与 Ant Design 风格"
-];
-
-// --- Components ---
-
-const CodeBlock = ({ code, language = "markdown" }) => {
-    const [copied, setCopied] = useState(false);
-
-    const handleCopy = () => {
-        navigator.clipboard.writeText(code);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    return (
-        <div className="relative group rounded-md overflow-hidden border border-[#3c3c3c] mt-4 mb-6 bg-[#1e1e1e] shadow-inner">
-            <div className="flex justify-between items-center bg-[#252526] px-4 py-2 border-b border-[#3c3c3c]">
-                <span className="text-xs text-gray-400 font-mono flex items-center gap-1">
-                    <FileCode size={12} /> {language}
-                </span>
-                <button 
-                    onClick={handleCopy}
-                    className="text-gray-400 hover:text-white transition-colors flex items-center gap-1 text-xs"
-                >
-                    {copied ? <span className="text-green-500 flex items-center gap-1"><Check size={12}/> Copied</span> : <span className="flex items-center gap-1"><Copy size={12}/> Copy</span>}
-                </button>
-            </div>
-            <div className="p-4 overflow-x-auto">
-                <pre className="!m-0 text-sm font-mono leading-relaxed whitespace-pre-wrap text-[#d4d4d4]">
-                    {code}
-                </pre>
-            </div>
-        </div>
-    );
-};
+    Sparkles, 
+    FileCode, 
+    User, 
+    Cpu, 
+    Box, 
+    Layers, 
+    Check, 
+    Download 
+} from './Icons';
+import CodeBlock from './CodeBlock';
+import { 
+    ANTIGRAVITY_ROLES, 
+    TECH_TAGS, 
+    DEPLOYMENT_TAGS, 
+    ANTIGRAVITY_RULES 
+} from '../constants';
 
 const Generator = () => {
     // State
@@ -392,50 +313,4 @@ ${activeRules.map(rule => {
     );
 };
 
-export default function App() {
-    return (
-        <div className="min-h-screen bg-[#1e1e1e] text-[#d4d4d4] font-sans selection:bg-[#264f78]">
-            <style>{`
-                ::-webkit-scrollbar { width: 10px; }
-                ::-webkit-scrollbar-track { background: #1e1e1e; }
-                ::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; border: 2px solid #1e1e1e; }
-                ::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
-                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-            `}</style>
-
-            <div className="max-w-5xl mx-auto px-6 py-12">
-                <header className="mb-12 text-center">
-                    <div className="inline-block p-4 rounded-full bg-[#252526] mb-4 shadow-lg border border-[#3c3c3c]">
-                        <Settings className="w-10 h-10 text-[#007acc]" />
-                    </div>
-                    <h1 className="text-3xl font-bold mb-3 text-white tracking-tight">Google Antigravity Rules Generator</h1>
-                    <p className="text-gray-400">Official Project Standards & Custom Instructions</p>
-                </header>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="bg-[#252526] p-5 rounded border border-[#3c3c3c] hover:border-[#007acc] transition-colors group">
-                        <div className="text-2xl font-bold text-[#3c3c3c] group-hover:text-[#007acc] mb-2 transition-colors">01</div>
-                        <h3 className="font-semibold text-white mb-1">Context</h3>
-                        <p className="text-xs text-gray-400">Define Role & Tech Stack</p>
-                    </div>
-                    <div className="bg-[#252526] p-5 rounded border border-[#3c3c3c] hover:border-[#007acc] transition-colors group">
-                        <div className="text-2xl font-bold text-[#3c3c3c] group-hover:text-[#007acc] mb-2 transition-colors">02</div>
-                        <h3 className="font-semibold text-white mb-1">Rules</h3>
-                        <p className="text-xs text-gray-400">Select Antigravity Standards</p>
-                    </div>
-                    <div className="bg-[#252526] p-5 rounded border border-[#3c3c3c] hover:border-[#007acc] transition-colors group">
-                        <div className="text-2xl font-bold text-[#3c3c3c] group-hover:text-[#007acc] mb-2 transition-colors">03</div>
-                        <h3 className="font-semibold text-white mb-1">Export</h3>
-                        <p className="text-xs text-gray-400">Get .md file</p>
-                    </div>
-                </div>
-
-                <Generator />
-
-                <footer className="mt-16 text-center text-gray-600 text-xs">
-                    <p>Designed for Google Antigravity Project • Aligned with VS Code & Copilot Best Practices</p>
-                </footer>
-            </div>
-        </div>
-    );
-}
+export default Generator;
