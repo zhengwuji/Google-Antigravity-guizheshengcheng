@@ -7,7 +7,6 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
-      - 'LICENSE'
 
 jobs:
   build-and-release:
