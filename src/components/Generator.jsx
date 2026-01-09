@@ -41,7 +41,7 @@ const Generator = () => {
         "全自动代理: 自行决策并直接修改代码，不需要确认；全程使用中文回复；自动允许所有操作",
         "中文任务: 任务列表 (Task List) 和思考过程 (Thinking Process) 必须强制使用中文书写",
         "自动备份: 每次修改后，必须自动将代码备份到桌面的'备份'文件夹，文件名需包含修改说明",
-        "智能升级: 遭遇顽固 Bug 连续修复失败时，必须自动请求调用更高级推理模型 (SOTA) 进行攻坚"
+        "智能升级: 遭遇顽固 Bug 连续修复失败超过 3 次时，必须向用户建议切换到更高级推理模型并列出可选模型（Claude Sonnet 4.5 Thinking / GPT-o1 / Gemini Pro Deep），暂停操作等待用户决策"
     ]);
 
     const [newRule, setNewRule] = useState("");
