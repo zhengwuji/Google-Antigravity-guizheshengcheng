@@ -21,11 +21,18 @@
     },
     "files": [
       "build/**/*",
-      "public/electron.js"
+      "public/electron.js",
+      "node_modules/**/*"
     ],
     "win": {
-      "target": "nsis",
-      "icon": "public/favicon.ico"
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     }
   },
   "keywords": [
