@@ -70,7 +70,10 @@ jobs:
           $version = "v1.0.0-$(git rev-parse --short HEAD)"
           $date = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
           $commitMsg = git log -1 --pretty=%B
-          $changelog = @"
+          
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          
+          $changelogContent = @"
           ## 🚀 自动构建版本
           
           **构建时间**: $date
@@ -85,14 +88,12 @@ jobs:
           - ✅ 完整使用文档
           
           ### 📥 下载说明
-          下载 Antigravity Rules规则生成 Setup 1.0.0.exe 并双击安装即可使用。
+          下载 Antigravity Rules规则生成.exe 并直接运行即可使用（无需安装）。
           "@
           
-          echo "VERSION=$version" >> $env:GITHUB_ENV
-          $changelog | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "CHANGELOG<<EOF" >> $env:GITHUB_ENV
-          echo $changelog >> $env:GITHUB_ENV
-          echo "EOF" >> $env:GITHUB_ENV
+          $changelogPath = Join-Path $env:RUNNER_TEMP "changelog.txt"
+          $changelogContent | Out-File -FilePath $changelogPath -Encoding utf8
+          "CHANGELOG_FILE=$changelogPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
         
       - name: Create Release and upload EXE
@@ -101,7 +102,7 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           name: Antigravity Rules规则生成 ${{ env.VERSION }}
-          body: ${{ env.CHANGELOG }}
+          body_path: ${{ env.CHANGELOG_FILE }}
           files: dist/*.exe
           draft: false
           prerelease: true
