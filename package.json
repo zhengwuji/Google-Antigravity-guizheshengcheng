@@ -2,16 +2,37 @@
   "name": "antigravity-rules-generator",
   "version": "1.0.0",
   "description": "Google Antigravity Rules Generator - A React-based configuration generator",
-  "main": "index.js",
-  "packageManager": "pnpm@8.15.0",
+  "main": "public/electron.js",
+  "homepage": "./",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "electron:dev": "concurrently \"cross-env BROWSER=none pnpm start\" \"wait-on http://localhost:5180 && cross-env ELECTRON_START_URL=http://localhost:5180 electron .\"",
+    "electron:build": "pnpm run build && electron-builder build --win"
   },
-  "keywords": ["react", "generator", "antigravity"],
+  "build": {
+    "appId": "com.antigravity.rules",
+    "productName": "Antigravity Rules规则生成",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "build/**/*",
+      "public/electron.js"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/favicon.ico"
+    }
+  },
+  "keywords": [
+    "react",
+    "generator",
+    "antigravity"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -19,11 +40,28 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1"
   },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^29.4.6",
+    "electron-builder": "^24.13.3",
+    "wait-on": "^8.0.5"
+  },
   "eslintConfig": {
-    "extends": ["react-app"]
+    "extends": [
+      "react-app"
+    ]
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
-    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
