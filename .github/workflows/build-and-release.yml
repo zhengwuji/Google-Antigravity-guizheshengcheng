@@ -1,0 +1,126 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/**'
+    paths-ignore:
+      - 'README.md'
+      - '**.md'
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: 安装依赖
+        run: pnpm install
+        continue-on-error: false
+        
+      - name: 构建 React 应用
+        id: build-react
+        run: pnpm run build
+        continue-on-error: false
+        
+      - name: 打包 Electron 应用
+        id: build-electron
+        run: pnpm run electron:build
+        continue-on-error: false
+        
+      - name: 收集构建产物
+        if: success()
+        run: |
+          echo "BUILD_SUCCESS=true" >> $GITHUB_ENV
+          $exePath = Get-ChildItem -Path "dist" -Filter "*.exe" -Recurse | Select-Object -First 1
+          if ($exePath) {
+            echo "EXE_PATH=$($exePath.FullName)" >> $GITHUB_ENV
+            echo "EXE_NAME=$($exePath.Name)" >> $GITHUB_ENV
+          }
+        shell: pwsh
+        
+      - name: 上传构建错误日志
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-error-logs
+          path: |
+            npm-debug.log*
+            yarn-error.log*
+            pnpm-debug.log*
+            build/
+          retention-days: 7
+          
+      - name: 生成版本号和更新日志
+        if: success()
+        id: generate-changelog
+        run: |
+          $version = "v1.0.0-$(git rev-parse --short HEAD)"
+          $date = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+          $commitMsg = git log -1 --pretty=%B
+          $changelog = @"
+          ## 🚀 自动构建版本
+          
+          **构建时间**: $date
+          **版本号**: $version
+          **提交信息**: $commitMsg
+          
+          ### 📦 包含内容
+          - ✅ 大白话解释 (Plain Explanations)
+          - ✅ AI 智能配置 (Smart Config)
+          - ✅ 自动备份 (Auto Backup)
+          - ✅ 中文任务强制 (Chinese Task)
+          - ✅ 完整使用文档
+          
+          ### 📥 下载说明
+          下载 \`Antigravity Rules规则生成 Setup 1.0.0.exe\` 并双击安装即可使用。
+          "@
+          
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$changelog" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        shell: pwsh
+        
+      - name: 创建 Release 并上传 EXE
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Antigravity Rules规则生成 ${{ env.VERSION }}
+          body: ${{ env.CHANGELOG }}
+          files: |
+            dist/*.exe
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: 构建状态通知
+        if: always()
+        run: |
+          if ($env:BUILD_SUCCESS -eq "true") {
+            echo "✅ 构建成功！Release 已发布到: https://github.com/${{ github.repository }}/releases"
+          } else {
+            echo "❌ 构建失败！请查看构建日志和错误信息。"
+            exit 1
+          }
+        shell: pwsh
