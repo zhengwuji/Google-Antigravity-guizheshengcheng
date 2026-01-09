@@ -4,15 +4,10 @@ on:
   push:
     branches:
       - main
-    paths:
-      - src/**
-      - public/**
-      - package.json
-      - pnpm-lock.yaml
-      - .github/workflows/**
     paths-ignore:
-      - README.md
       - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
 
 jobs:
   build-and-release:
