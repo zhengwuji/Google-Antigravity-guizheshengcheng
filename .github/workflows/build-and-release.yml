@@ -1,17 +1,17 @@
 name: Build and Release
 
-'on':
+on:
   push:
     branches:
       - main
     paths:
-      - 'src/**'
-      - 'public/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/**'
+      - src/**
+      - public/**
+      - package.json
+      - pnpm-lock.yaml
+      - .github/workflows/**
     paths-ignore:
-      - 'README.md'
+      - README.md
       - '**.md'
 
 jobs:
@@ -19,45 +19,45 @@ jobs:
     runs-on: windows-latest
     
     steps:
-      - name: 检出代码
+      - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: 设置 Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
           
-      - name: 安装 pnpm
+      - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
           
-      - name: 安装依赖
+      - name: Install dependencies
         run: pnpm install
         continue-on-error: false
         
-      - name: 构建 React 应用
+      - name: Build React app
         id: build-react
         run: pnpm run build
         continue-on-error: false
         
-      - name: 打包 Electron 应用
+      - name: Build Electron app
         id: build-electron
         run: pnpm run electron:build
         continue-on-error: false
         
-      - name: 收集构建产物
+      - name: Collect build artifacts
         if: success()
         run: |
-          echo "BUILD_SUCCESS=true" >> $GITHUB_ENV
+          echo "BUILD_SUCCESS=true" >> $env:GITHUB_ENV
           $exePath = Get-ChildItem -Path "dist" -Filter "*.exe" -Recurse | Select-Object -First 1
           if ($exePath) {
-            echo "EXE_PATH=$($exePath.FullName)" >> $GITHUB_ENV
-            echo "EXE_NAME=$($exePath.Name)" >> $GITHUB_ENV
+            echo "EXE_PATH=$($exePath.FullName)" >> $env:GITHUB_ENV
+            echo "EXE_NAME=$($exePath.Name)" >> $env:GITHUB_ENV
           }
         shell: pwsh
         
-      - name: 上传构建错误日志
+      - name: Upload build error logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -69,7 +69,7 @@ jobs:
             build/
           retention-days: 7
           
-      - name: 生成版本号和更新日志
+      - name: Generate version and changelog
         if: success()
         id: generate-changelog
         run: |
@@ -91,30 +91,30 @@ jobs:
           - ✅ 完整使用文档
           
           ### 📥 下载说明
-          下载 \`Antigravity Rules规则生成 Setup 1.0.0.exe\` 并双击安装即可使用。
+          下载 Antigravity Rules规则生成 Setup 1.0.0.exe 并双击安装即可使用。
           "@
           
-          echo "VERSION=$version" >> $GITHUB_ENV
-          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          echo "$changelog" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+          $changelog | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "CHANGELOG<<EOF" >> $env:GITHUB_ENV
+          echo $changelog >> $env:GITHUB_ENV
+          echo "EOF" >> $env:GITHUB_ENV
         shell: pwsh
         
-      - name: 创建 Release 并上传 EXE
+      - name: Create Release and upload EXE
         if: success()
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.VERSION }}
           name: Antigravity Rules规则生成 ${{ env.VERSION }}
           body: ${{ env.CHANGELOG }}
-          files: |
-            dist/*.exe
+          files: dist/*.exe
           draft: false
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: 构建状态通知
+      - name: Build status notification
         if: always()
         run: |
           if ($env:BUILD_SUCCESS -eq "true") {
